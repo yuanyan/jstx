@@ -64,7 +64,7 @@ var template = module.exports = function template(text, data, settings) {
             source += "'+\n(" + requirePartial(includes[0]) + ")("+ context +")+\n'";
         }
         if (escape) {
-            source += "'+\n((__t=(" + escape + "))==null?'':escape(__t))+\n'";
+            source += "'+\n((__t=(" + escape + "))==null?'':__e(__t))+\n'";
         }
         if (interpolate) {
             source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
@@ -83,9 +83,8 @@ var template = module.exports = function template(text, data, settings) {
 
     source = "var __t,__p='',__j=Array.prototype.join," +
         "print=function(){__p+=__j.call(arguments,'');},\n" +
-        (settings.escaper? "escape=function(s){return s.replace(/[<>\"\'/]/g,function(m){return {'<':'&lt;','>': '&gt;','\"': '&quot;','\'': '&#x27;','/': '&#x2F;'}[m]})};\n": "escape=" + settings.escaper + ";\n") +
+        (escape? (settings.escaper? "__e=" + settings.escaper + ";\n": "__e=function(s){return s.replace(/[<>\"\'/]/g,function(m){return {'<':'&lt;', '>':'&gt;', '\"':'&quot;', \"'\":'&#x27;', '/':'&#x2F;'}[m]})};\n"): '') +
         source + "return __p;\n";
-
     try {
         render = new Function(settings.variable || 'obj', '_', source);
     } catch (e) {
